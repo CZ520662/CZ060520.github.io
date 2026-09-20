@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>个人主页 · Personal Portfolio</title>
+<style>
+  :root{
+    --bg:#f6f4ef;
+    --bg-soft:#efeae0;
+    --card:#ffffff;
+    --ink:#2b2a27;
+    --ink-soft:#6b665d;
+    --accent:#8a6d3b;
+    --accent-soft:#c9b489;
+    --line:#e3ddd0;
+    --shadow:0 6px 24px rgba(60,50,30,.08);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:linear-gradient(180deg,var(--bg) 0%, var(--bg-soft) 100%);
+    color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans CJK SC",sans-serif;
+    line-height:1.7;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1200px;margin:0 auto;padding:0 24px 80px}
+
+  /* 顶部英雄区 */
+  header.hero{
+    padding:64px 0 24px;
+    text-align:center;
+    background:radial-gradient(ellipse at center, rgba(201,180,137,.18) 0%, transparent 70%);
+  }
+  .hero .avatar{
+    width:96px;height:96px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent) 0%, var(--accent-soft) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:36px;font-weight:600;letter-spacing:2px;
+    margin:0 auto 18px;box-shadow:var(--shadow);
+  }
+  .hero h1{font-size:40px;margin:0 0 6px;font-weight:600;letter-spacing:1px}
+  .hero .en{font-size:16px;color:var(--accent);font-weight:400;letter-spacing:2px;margin-bottom:6px;text-transform:uppercase}
+  .hero .tag{color:var(--ink-soft);font-size:15px}
+  .hero .tag span+span::before{content:" · ";color:var(--accent-soft);margin:0 4px}
+
+  /* 切页 tabs */
+  .tabs{
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+    margin:28px 0 32px;position:sticky;top:0;z-index:10;
+    padding:10px;background:transparent;
+  }
+  .tab{
+    border:1px solid var(--line);background:rgba(255,255,255,.7);
+    backdrop-filter:blur(8px);
+    padding:9px 18px;border-radius:999px;cursor:pointer;
+    font-size:14px;color:var(--ink-soft);transition:all .2s ease;
+    font-weight:500;text-align:center;
+  }
+  .tab .en{font-size:11px;opacity:.7;display:block;font-weight:400}
+  .tab:hover{color:var(--ink);border-color:var(--accent-soft)}
+  .tab.active{
+    background:var(--ink);color:#fff;border-color:var(--ink);
+    box-shadow:var(--shadow);
+  }
+
+  /* 切页内容 */
+  .sheet{display:none;animation:fade .4s ease}
+  .sheet.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .sheet-head{
+    display:flex;align-items:baseline;gap:14px;margin:0 0 22px;
+    border-bottom:1px solid var(--line);padding-bottom:14px;
+  }
+  .sheet-head h2{margin:0;font-size:24px;font-weight:600}
+  .sheet-head .en{color:var(--accent);font-size:15px;font-weight:400}
+  .sheet-head .count{color:var(--ink-soft);font-size:13px;margin-left:auto}
+
+  /* 箴言区 */
+  .aphorisms{
+    background:linear-gradient(135deg, #2b2a27 0%, #3d3a33 100%);
+    color:#f6f4ef;border-radius:var(--radius);
+    padding:36px 36px 28px;margin-bottom:24px;
+    box-shadow:0 12px 36px rgba(43,42,39,.18);
+    position:relative;overflow:hidden;
+  }
+  .aphorisms::before{
+    content:"" "";position:absolute;top:-20px;right:-20px;
+    font-size:180px;line-height:1;color:rgba(201,180,137,.08);
+    font-family:Georgia,serif;pointer-events:none;
+  }
+  .aphorisms h2{
+    margin:0 0 6px;font-size:22px;font-weight:600;
+    display:flex;align-items:center;gap:10px;
+  }
+  .aphorisms h2 .en{font-size:14px;color:var(--accent-soft);font-weight:400;letter-spacing:1px}
+  .aphorisms .intro{
+    color:rgba(246,244,239,.7);font-size:13.5px;margin-bottom:20px;
+    line-height:1.7;
+  }
+  .quote-list{display:grid;gap:18px}
+  .quote{
+    border-left:3px solid var(--accent-soft);padding:6px 0 6px 18px;
+  }
+  .quote .zh{font-size:15px;line-height:1.75;color:#f6f4ef}
+  .quote .en{font-size:13px;color:rgba(246,244,239,.65);font-style:italic;margin-top:4px;line-height:1.6}
+  .quote .author{
+    margin-top:6px;font-size:12.5px;color:var(--accent-soft);
+    display:flex;align-items:center;gap:6px;
+  }
+  .quote .author .yr{color:rgba(246,244,239,.45);font-size:11px}
+
+  /* 模块网格 */
+  .grid{
+    display:grid;gap:20px;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  }
+  .card{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:22px 22px 18px;
+    box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;
+  }
+  .card h3{
+    margin:0 0 14px;font-size:17px;font-weight:600;
+    display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+    padding-bottom:10px;border-bottom:1px dashed var(--line);
+  }
+  .card h3 .en{font-size:12.5px;color:var(--accent);font-weight:400;letter-spacing:.5px}
+  .card h3::before{
+    content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);
+    display:inline-block;flex-shrink:0;
+  }
+
+  /* 内容项：图片 + 文字并行 */
+  .items{display:flex;flex-direction:column;gap:14px}
+  .item-text{
+    font-size:14.5px;color:var(--ink);word-break:break-word;white-space:pre-wrap;
+  }
+  .item-image{
+    display:inline-flex;flex-direction:column;align-items:center;
+  }
+  .item-image img{
+    width:auto;height:auto;max-width:100%;max-height:240px;
+    object-fit:cover;border-radius:10px;border:1px solid var(--line);
+    background:var(--bg-soft);
+  }
+  .item-image .cap{
+    margin-top:6px;font-size:12.5px;color:var(--ink-soft);
+  }
+  .row-images{display:flex;flex-wrap:wrap;gap:12px}
+  .empty-hint{color:var(--ink-soft);font-size:13px;font-style:italic;opacity:.7}
+
+  /* 出国照片画廊 */
+  .gallery{
+    display:grid;gap:18px;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  }
+  .gallery .photo{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);overflow:hidden;
+    box-shadow:var(--shadow);transition:transform .3s ease,box-shadow .3s ease;
+  }
+  .gallery .photo:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(60,50,30,.15)}
+  .gallery .photo img{
+    width:100%;height:200px;object-fit:cover;display:block;
+    border-bottom:1px solid var(--line);
+  }
+  .gallery .photo .cap{
+    padding:10px 14px;font-size:14px;color:var(--ink);text-align:center;
+  }
+  .gallery .photo .cap .en{display:block;font-size:11.5px;color:var(--ink-soft);margin-top:2px}
+
+  /* 状态条 */
+  .statusbar{
+    position:fixed;right:16px;bottom:14px;z-index:50;
+    font-size:12px;color:var(--ink-soft);
+    background:rgba(255,255,255,.8);backdrop-filter:blur(6px);
+    border:1px solid var(--line);padding:6px 12px;border-radius:999px;
+    box-shadow:var(--shadow);display:flex;align-items:center;gap:6px;
+  }
+  .dot{width:8px;height:8px;border-radius:50%;background:#3bbd5a;box-shadow:0 0 0 0 rgba(59,189,90,.5)}
+  .dot.sync{animation:pulse 1s infinite}
+  .dot.err{background:#d94b3b}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(59,189,90,.45)}70%{box-shadow:0 0 0 8px rgba(59,189,90,0)}100%{box-shadow:0 0 0 0 rgba(59,189,90,0)}}
+
+  @media (max-width:640px){
+    .hero h1{font-size:30px}
+    .hero{padding:44px 0 12px}
+    .grid{grid-template-columns:1fr}
+    .gallery{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+    .aphorisms{padding:24px 20px}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="avatar" id="avatar">·</div>
+      <h1 id="name">个人主页</h1>
+      <div class="en" id="nameEn">Personal Portfolio</div>
+      <div class="tag" id="meta"></div>
+    </header>
+
+    <nav class="tabs" id="tabs"></nav>
+    <div id="sheets"></div>
+  </div>
+
+  <div class="statusbar"><span class="dot" id="dot"></span><span id="status">加载中… / Loading…</span></div>
+
+<script>
+  const API = "/api/data";
+  const REFRESH_MS = 5000; // 每 5 秒重新拉取，做到随表格变化而更新
+  let lastSignature = "";
+  let activeSheet = "";
+
+  // 切页名中英文映射
+  const SHEET_EN = {
+    "Sheet1": "Profile",
+    "基本信息": "Basic Information",
+    "个人爱好": "Personal Hobbies",
+    "教育经历": "Education",
+    "旅行经历": "Travel Experience",
+    "出国照片": "Overseas Gallery"
+  };
+  // 模块名中英文映射
+  const MODULE_EN = {
+    "基本信息": "Basic Information",
+    "个人爱好": "Personal Hobbies",
+    "教育经历": "Educational Background",
+    "旅行经历": "Travel Experience",
+    "海外行迹": "Overseas Footprints"
+  };
+  // 常见字段中英文映射（用于内容关键词的英文标注）
+  const FIELD_EN = {
+    "年龄": "Age",
+    "性别": "Gender",
+    "民族": "Ethnicity",
+    "男": "Male",
+    "女": "Female",
+    "回": "Hui",
+    "初中": "Middle School",
+    "高中": "High School",
+    "本科": "Undergraduate"
+  };
+
+  // 我所珍视的箴言 —— 康德 / 荷尔德林 / 黑格尔
+  const APHORISMS = [
+    {
+      zh: "有两样东西，越是经常而持久地对它们反复思考，它们就越是使心灵充满常新而日益增长的惊赞和敬畏：我头上的星空和我心中的道德法则。",
+      en: "Two things fill the mind with ever new and increasing admiration and awe: the starry heavens above me and the moral law within me.",
+      author: "康德 Immanuel Kant",
+      yr: "1724–1804"
+    },
+    {
+      zh: "人是目的，而非手段；无论对自己还是对他人，永远把人当作目的来对待，而不仅仅当作工具。",
+      en: "Act so that you treat humanity, whether in your own person or in that of another, always as an end and never merely as a means.",
+      author: "康德 Immanuel Kant",
+      yr: "1724–1804"
+    },
+    {
+      zh: "人诗意地栖居在大地上。",
+      en: "Poetically man dwells on this earth.",
+      author: "荷尔德林 Friedrich Hölderlin",
+      yr: "1770–1843"
+    },
+    {
+      zh: "哪里有危险，哪里也生长着拯救之力。",
+      en: "Where there is danger, there also grows what saves.",
+      author: "荷尔德林 Friedrich Hölderlin",
+      yr: "1770–1843"
+    },
+    {
+      zh: "密涅瓦的猫头鹰只在黄昏时才起飞。",
+      en: "The owl of Minerva spreads its wings only with the falling of the dusk.",
+      author: "黑格尔 G. W. F. Hegel",
+      yr: "1770–1831"
+    },
+    {
+      zh: "没有热情，世界上没有任何伟大的事业能被完成。",
+      en: "Nothing great in the world has been accomplished without passion.",
+      author: "黑格尔 G. W. F. Hegel",
+      yr: "1770–1831"
+    }
+  ];
+
+  // 国家名中英文映射（用于出国照片画廊）
+  const COUNTRY_EN = {
+    "冰岛": "Iceland",
+    "埃及": "Egypt",
+    "奥地利": "Austria",
+    "斯洛伐克": "Slovakia",
+    "新加坡": "Singapore",
+    "日本": "Japan",
+    "泰国": "Thailand",
+    "澳大利亚": "Australia",
+    "美国": "United States",
+    "阿联酋": "UAE",
+    "俄罗斯": "Russia",
+    "英国": "United Kingdom",
+    "法国": "France",
+    "德国": "Germany",
+    "意大利": "Italy"
+  };
+
+  function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+  function sheetEn(name){return SHEET_EN[name] || name;}
+  function moduleEn(title){return MODULE_EN[title] || "";}
+
+  // 渲染箴言区
+  function renderAphorisms(){
+    const quotes = APHORISMS.map(q=>`
+      <div class="quote">
+        <div class="zh">${esc(q.zh)}</div>
+        <div class="en">${esc(q.en)}</div>
+        <div class="author">${esc(q.author)} <span class="yr">${esc(q.yr)}</span></div>
+      </div>
+    `).join('');
+    return `
+      <section class="aphorisms">
+        <h2>我所珍视的箴言 <span class="en">Aphorisms I Cherish</span></h2>
+        <div class="intro">
+          在此拾取三位德意志思想者的只言片语。他们以星空与道德为坐标，以诗意与危险为底色，以黄昏与热情为翼——构筑了关于"人何以为人"的回答。
+          <br>
+          <span style="opacity:.6">Three voices from the German spirit—Kant, Hölderlin, Hegel—on the meaning of a human life.</span>
+        </div>
+        <div class="quote-list">${quotes}</div>
+      </section>
+    `;
+  }
+
+  // 将一个模块的 items 渲染成 HTML；图片与文字可并行
+  function renderItems(items){
+    if(!items || items.length===0){
+      return '<div class="empty-hint">暂无内容 / No content yet</div>';
+    }
+    let html = '';
+    let imgBuf = [];
+    const flushImg = ()=>{
+      if(imgBuf.length){
+        html += '<div class="row-images">' + imgBuf.join('') + '</div>';
+        imgBuf = [];
+      }
+    };
+    for(const it of items){
+      if(it.type === 'image'){
+        imgBuf.push(
+          `<div class="item-image">`+
+            `<img loading="lazy" src="${esc(it.src)}" alt="${esc(it.label||'')}">`+
+            (it.label?`<div class="cap">${esc(it.label)}</div>`:'')+
+          `</div>`
+        );
+      } else {
+        flushImg();
+        html += `<div class="item-text">${esc(it.value)}</div>`;
+      }
+    }
+    flushImg();
+    return html;
+  }
+
+  // 渲染出国照片画廊
+  function renderGallery(items){
+    if(!items || items.length===0){
+      return '<div class="empty-hint">暂无照片 / No photos</div>';
+    }
+    return '<div class="gallery">' + items.map(it=>{
+      const label = it.label || '';
+      const en = COUNTRY_EN[label] || '';
+      return `<div class="photo">
+        <img loading="lazy" src="${esc(it.src)}" alt="${esc(label)}">
+        <div class="cap">${esc(label)}${en?`<span class="en">${esc(en)}</span>`:''}</div>
+      </div>`;
+    }).join('') + '</div>';
+  }
+
+  function render(data){
+    const sheets = data.sheets || [];
+    if(!sheets.length){
+      document.getElementById('sheets').innerHTML = '<div class="empty-hint">未读取到任何 sheet，请在 information.xlsx 中添加内容。</div>';
+      return;
+    }
+
+    // 英雄区：从第一个 sheet 第一个模块提取姓名
+    const first = sheets[0];
+    let heroName = first ? first.name : '个人主页';
+    let metaParts = [];
+    if(first && first.modules && first.modules[0] && first.modules[0].items){
+      const items = first.modules[0].items;
+      const nameItem = items.find(i=>i.type==='text');
+      if(nameItem) heroName = nameItem.value;
+      for(const it of items.slice(1,5)){
+        const v = it.type==='text'? it.value : (it.label||'');
+        if(v && v.length<=20) metaParts.push(v);
+      }
+    }
+    document.getElementById('name').textContent = heroName;
+    document.getElementById('nameEn').textContent = "Personal Portfolio";
+    document.getElementById('avatar').textContent = heroName? heroName.charAt(0) : '·';
+    document.getElementById('meta').innerHTML = metaParts.map(s=>`<span>${esc(s)}</span>`).join('');
+
+    // tabs
+    const tabs = document.getElementById('tabs');
+    tabs.innerHTML = sheets.map(s=>{
+      const en = sheetEn(s.name);
+      const active = (s.name===activeSheet) || (!activeSheet && s===sheets[0]);
+      if(active) activeSheet = s.name;
+      return `<div class="tab ${active?'active':''}" data-name="${esc(s.name)}">${esc(s.name)}<span class="en">${esc(en)}</span></div>`;
+    }).join('');
+
+    // sheets content
+    const sheetsEl = document.getElementById('sheets');
+    sheetsEl.innerHTML = sheets.map((s, idx)=>{
+      const active = (s.name===activeSheet);
+      const moduleCount = s.modules.length;
+      const en = sheetEn(s.name);
+      const isAbroad = (s.name === '出国照片');
+
+      // 在第一个切页顶部插入箴言区
+      const aphorismHtml = (idx === 0) ? renderAphorisms() : '';
+
+      let modulesHtml = '';
+      if(isAbroad){
+        // 出国照片切页：以画廊形式呈现
+        const allItems = s.modules.length ? s.modules[0].items : [];
+        modulesHtml = renderGallery(allItems);
+      } else {
+        modulesHtml = `<div class="grid">
+          ${s.modules.map(m=>{
+            const men = moduleEn(m.title);
+            return `<div class="card">
+              <h3>${esc(m.title||'未命名模块')}${men?`<span class="en">${esc(men)}</span>`:''}</h3>
+              <div class="items">${renderItems(m.items)}</div>
+            </div>`;
+          }).join('')}
+        </div>`;
+      }
+
+      return `<section class="sheet ${active?'active':''}" data-name="${esc(s.name)}">
+        ${aphorismHtml}
+        <div class="sheet-head">
+          <h2>${esc(s.name)}</h2>
+          <span class="en">${esc(en)}</span>
+          <span class="count">${moduleCount} 个模块 · ${moduleCount} module(s)</span>
+        </div>
+        ${modulesHtml}
+      </section>`;
+    }).join('');
+
+    // tab 切换
+    tabs.querySelectorAll('.tab').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        activeSheet = el.dataset.name;
+        tabs.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t===el));
+        sheetsEl.querySelectorAll('.sheet').forEach(sec=>{
+          sec.classList.toggle('active', sec.dataset.name===activeSheet);
+        });
+      });
+    });
+  }
+
+  async function fetchAndRender(){
+    const dot = document.getElementById('dot');
+    const status = document.getElementById('status');
+    dot.classList.add('sync'); dot.classList.remove('err');
+    status.textContent = '同步中… / Syncing…';
+    try{
+      const res = await fetch(API+'?t='+Date.now());
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      const sig = JSON.stringify(data);
+      if(sig !== lastSignature){
+        lastSignature = sig;
+        render(data);
+        status.textContent = '已更新 ' + new Date().toLocaleTimeString();
+      } else {
+        status.textContent = '内容无变化 ' + new Date().toLocaleTimeString();
+      }
+      dot.classList.remove('sync','err');
+    }catch(e){
+      dot.classList.add('err'); dot.classList.remove('sync');
+      status.textContent = '同步失败 / Sync failed: '+e.message;
+    }
+  }
+
+  fetchAndRender();
+  setInterval(fetchAndRender, REFRESH_MS);
+</script>
+</body>
+</html>
